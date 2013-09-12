@@ -5,11 +5,10 @@
   <parent>
     <groupId>nl.vpro.degraphmalizer</groupId>
     <artifactId>degraphmalizer-parent</artifactId>
-    <version>0.1</version>
+    <version>0.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>degraphmalizer-core</artifactId>
-  <version>0.1</version>
 
   <dependencies>
     <dependency>
