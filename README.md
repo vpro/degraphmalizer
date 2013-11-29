@@ -1,4 +1,4 @@
-![TravisStatus](https://travis-ci.org/vpro/degraphmalizer.png?branch=master)
+[![TravisStatus](https://travis-ci.org/vpro/degraphmalizer.png?branch=master)](https://travis-ci.org/vpro/degraphmalizer)
 
 # The Degraphmalizer!
 
