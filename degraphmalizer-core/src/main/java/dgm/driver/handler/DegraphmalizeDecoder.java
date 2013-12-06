@@ -53,7 +53,8 @@ public class DegraphmalizeDecoder extends OneToOneDecoder {
             try {
                 result[i] = URLDecoder.decode(components[i], "UTF-8");
             } catch (UnsupportedEncodingException e) {
-                result[i] = components[i];
+                // cannot happen
+                throw new RuntimeException(e);
             }
         }
         return result;
