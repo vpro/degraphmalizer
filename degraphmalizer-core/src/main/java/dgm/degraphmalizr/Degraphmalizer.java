@@ -259,7 +259,7 @@ public class Degraphmalizer implements Degraphmalizr {
 
             log.debug("Degraphmalize request for {} triggered compute of: {}", id, ids);
         } else {
-            log.info("Degraphmalize request for {} triggered {} computes", id, recomputeRequests.size());
+            log.debug("Degraphmalize request for {} triggered {} computes", id, recomputeRequests.size());
         }
     }
 
