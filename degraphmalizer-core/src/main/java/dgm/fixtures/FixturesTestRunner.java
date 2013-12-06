@@ -33,7 +33,7 @@ public class FixturesTestRunner implements ConfigurationMonitor, FixturesRunner 
     protected final RedegraphmalizeCommand redegraphmalizeCommand;
     protected final VerifyResultDocumentsCommand verifyResultDocumentsCommand;
 
-    private static final Logger log = LoggerFactory.getLogger(FixturesDevelopmentRunner.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FixturesDevelopmentRunner.class);
 
     @Inject
     public FixturesTestRunner(Client client, Provider<Configuration> cfgProvider, Provider<FixtureConfiguration> fixtureConfigurationProvider,  Degraphmalizr degraphmalizr) {
@@ -47,27 +47,24 @@ public class FixturesTestRunner implements ConfigurationMonitor, FixturesRunner 
 
     @Override
     public void runFixtures() {
-        List<ID> ids;
-        List<String> indexes;
-        List<Pair<ID, Boolean>> verifyResults;
-
         try {
 
-            ids = redegraphmalizeCommand.execute();
-            log.info("Degraphmalized {} documents", ids.size());
-            verifyResults = verifyResultDocumentsCommand.execute();
-            log.info("Checked {} result documents", verifyResults.size());
-            int success = 0, failed = 0;
-            for (Pair<ID, Boolean> result : verifyResults) {
+            List<ID> ids = redegraphmalizeCommand.execute();
+            LOG.info("Degraphmalized {} documents", ids.size());
+            List<Pair<String, Boolean>> verifyResults = verifyResultDocumentsCommand.execute();
+            LOG.info("Checked {} result documents", verifyResults.size());
+            int success = 0;
+            int failed = 0;
+            for (Pair<String, Boolean> result : verifyResults) {
                 if (result.b) {
                     success++;
                 } else {
                     failed++;
                 }
             }
-            log.info("Verify results {} good, {} bad ", success, failed);
+            LOG.info("Verify results {} good, {} bad ", success, failed);
         } catch (Exception e) {
-            log.error("Fixture run failed: {} ", e.getMessage());
+            LOG.error("Fixture run failed: {} ", e.getMessage());
             e.printStackTrace();
         }
     }
@@ -97,7 +94,7 @@ public class FixturesTestRunner implements ConfigurationMonitor, FixturesRunner 
             try {
                 runFixtures();
             } catch (Exception e) {
-                log.error("Something went wrong inserting the fixtures after a configurationChanged event.", e);
+                LOG.error("Something went wrong inserting the fixtures after a configurationChanged event.", e);
             }
     }
 }

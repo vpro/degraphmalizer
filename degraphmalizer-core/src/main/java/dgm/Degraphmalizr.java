@@ -8,7 +8,6 @@ import dgm.exceptions.DegraphmalizerException;
 
 import java.util.concurrent.Future;
 
-public interface Degraphmalizr
-{
+public interface Degraphmalizr {
     Future<DegraphmalizeResult> degraphmalize(DegraphmalizeRequestType requestType, DegraphmalizeRequestScope requestScope, ID id, DegraphmalizeCallback callback) throws DegraphmalizerException;
 }

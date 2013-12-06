@@ -252,21 +252,5 @@
 
     </plugins>
 
-
-
-
   </build>
-<!--
-  <repositories>
-    <repository>
-      <id>central</id>
-      <url>http://nexus.vpro.nl/content/groups/public</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>-->
-</project>
+ </project>

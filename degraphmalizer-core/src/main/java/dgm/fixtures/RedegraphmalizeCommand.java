@@ -10,6 +10,7 @@ import dgm.degraphmalizr.degraphmalize.DegraphmalizeRequestScope;
 import dgm.degraphmalizr.degraphmalize.DegraphmalizeRequestType;
 import dgm.degraphmalizr.degraphmalize.DegraphmalizeResult;
 import dgm.degraphmalizr.degraphmalize.LoggingDegraphmalizeCallback;
+import dgm.exceptions.SourceMissingException;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -20,8 +21,7 @@ import java.util.concurrent.Future;
 
 import javax.inject.Inject;
 
-import org.elasticsearch.action.admin.indices.refresh.RefreshRequestBuilder;
-import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
+import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
@@ -31,6 +31,7 @@ import org.elasticsearch.search.SearchHit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Throwables;
 import com.google.common.collect.Iterables;
 import com.google.inject.Provider;
 
@@ -42,12 +43,14 @@ import com.google.inject.Provider;
  * @author Ernst Bunders
  */
 public class RedegraphmalizeCommand implements Command<List<ID>> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(RedegraphmalizeCommand.class);
+
     private final Client client;
     private final Provider<Configuration> cfgProvider;
     private final Provider<FixtureConfiguration> fixtureConfigurationProvider;
     private final Degraphmalizr degraphmalizr;
 
-    private static final Logger log = LoggerFactory.getLogger(RedegraphmalizeCommand.class);
 
     @Inject
     public RedegraphmalizeCommand(Client client, Provider<Configuration> cfgProvider, Provider<FixtureConfiguration> fixtureConfigurationProvider, Degraphmalizr degraphmalizr) {
@@ -76,18 +79,24 @@ public class RedegraphmalizeCommand implements Command<List<ID>> {
 
             for (SearchHit hit : response.getHits().getHits()) {
                 ID id = new ID(hit.getIndex(), hit.getType(), hit.getId(), hit.version());
-                log.debug("Re-degraphmalizing document {}", id);
+                LOG.debug("Re-degraphmalizing document {}", id);
                 Future<DegraphmalizeResult> futureResult = degraphmalizr.degraphmalize(DegraphmalizeRequestType.UPDATE, DegraphmalizeRequestScope.DOCUMENT, id, new LoggingDegraphmalizeCallback());
                 try {
                     DegraphmalizeResult result = futureResult.get();
-                    log.debug("Re-degraphmalized document {}", result.root());
+                    LOG.debug("Re-degraphmalized document {}", result.root());
                     ids.add(id);
                 } catch (ExecutionException ee) {
-                    log.warn("Degraphmalize not successful {} ", ee);
+                    Throwable cause = Throwables.getRootCause(ee);
+                    if (cause != null && cause instanceof SourceMissingException) {
+                        LOG.warn("Degraphmalize not successful {} ", ee.getMessage());
+                    } else {
+                        LOG.warn("Degraphmalize not successful {} ", ee.getMessage(), ee);
+                    }
+
                 }
             }
 
-            log.info("Flushing target indexes");
+            LOG.info("Refreshing target indexes ");
             FixtureConfiguration fixtureConfiguration = fixtureConfigurationProvider.get();
             Set<String> indexNames = new HashSet<String>();
             for (String index : fixtureConfiguration.getIndexNames()) {
@@ -98,11 +107,16 @@ public class RedegraphmalizeCommand implements Command<List<ID>> {
                     }
                 }
             }
-            RefreshRequestBuilder builder = client.admin().indices().prepareRefresh(indexNames.toArray(new String[indexNames.size()]));
-            RefreshResponse refreshResponse = builder.execute().get();
-            log.info("Target indexes flushed {}", indexNames);
+            client.admin().indices().prepareRefresh(indexNames.toArray(new String[indexNames.size()])).execute().get();
+            client.admin().indices().prepareFlush(indexNames.toArray(new String[indexNames.size()])).execute().get();
+
+            LOG.info("Waiting for green " + indexNames);
+            client.admin().cluster().health(new ClusterHealthRequest(indexNames.toArray(new String[indexNames.size()])).waitForActiveShards(1)).actionGet();
+
+            client.admin().indices().prepareFlush(indexNames.toArray(new String[indexNames.size()])).execute().get();
+            LOG.info("Target indexes flushed {}", indexNames);
         } catch (Exception e) {
-            log.error("Something went wrong re-degraphmalizing fixture documents.", e);
+            LOG.error("Something went wrong re-degraphmalizing fixture documents.", e);
         }
         return ids;
     }
