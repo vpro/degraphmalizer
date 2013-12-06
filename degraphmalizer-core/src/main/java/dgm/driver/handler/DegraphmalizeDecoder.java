@@ -31,12 +31,12 @@ public class DegraphmalizeDecoder extends OneToOneDecoder {
         switch (requestType){
             case DELETE:
                 if (components.length < 1 || components.length > 4) {
-                    throw new InvalidRequest("URL must be of the form '/{index}/{type}/{id}/{version}'");
+                    throw new InvalidRequest("DELETE URL " + request.getUri() + " must be of the form '/{index}/{type}/{id}/{version}'");
                 }
                 break;
             case UPDATE:
                 if (components.length != 4) {
-                    throw new InvalidRequest("URL must be of the form '/{index}/{type}/{id}/{version}'");
+                    throw new InvalidRequest("UPDATE URL " + request.getUri() + " must be of the form '/{index}/{type}/{id}/{version}'");
                 }
                 break;
             default:
