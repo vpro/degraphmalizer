@@ -13,8 +13,7 @@ import org.slf4j.Logger;
 
 import com.google.inject.Inject;
 
-public class Handler extends SimpleChannelHandler
-{
+public class Handler extends SimpleChannelHandler {
     @InjectLogger
     private static Logger log;
 
