@@ -25,6 +25,11 @@ public class DegraphmalizeDecoder extends OneToOneDecoder {
         final HttpRequest request = (HttpRequest) o;
         final DegraphmalizeRequestType requestType = actionTypeFor(request);
 
+
+        if (request.getUri().equals("/favicon.ico")) {
+            return "IGNORE";
+        }
+
         // split url /TYPE/ID/ or fail
         final String[] components = urlDecode(request.getUri().substring(1).split("/"));
 
