@@ -1,9 +1,7 @@
 package dgm.exceptions;
 
-public class InvalidRequest extends DegraphmalizerException
-{
-    public InvalidRequest(String msg)
-    {
-        super(msg);
+public class InvalidRequest extends DegraphmalizerException {
+    public InvalidRequest(String msg)  {
+        super(msg, Severity.DEBUG);
     }
 }
