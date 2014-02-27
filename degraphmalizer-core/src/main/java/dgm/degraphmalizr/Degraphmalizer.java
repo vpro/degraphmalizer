@@ -296,7 +296,7 @@ public class Degraphmalizer implements Degraphmalizr {
         return new DegraphmalizeResult(action.id(), results);
     }
 
-    private List<Future<RecomputeResult>> deleteDocuments(Iterable<Vertex> iterator, DegraphmalizeRequest action) throws ExecutionException, InterruptedException {
+    private List<Future<RecomputeResult>> deleteDocuments(Iterable<Vertex> iterator, DegraphmalizeRequest action) throws InterruptedException {
         final List<Future<RecomputeResult>> results = new ArrayList<Future<RecomputeResult>>();
         for (Vertex vertex : iterator) {
             results.addAll(deleteDocument(createDocumentRequestForVertex(action.type(), vertex)));
@@ -304,7 +304,7 @@ public class Degraphmalizer implements Degraphmalizr {
         return results;
     }
 
-    private List<Future<RecomputeResult>> deleteDocument(DegraphmalizeRequest action) throws ExecutionException, InterruptedException {
+    private List<Future<RecomputeResult>> deleteDocument(DegraphmalizeRequest action) throws InterruptedException {
         if (!action.scope().equals(DOCUMENT)) {
             throw new InvalidRequest("Delete a document is not valid for a scope of " + action.scope());
         }

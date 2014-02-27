@@ -458,8 +458,7 @@ public class SubgraphManagerTest
      * @throws DegraphmalizerException
      * @throws IOException
      */
-    private Subgraph commitSubgraphAndVerifyProperties(Props p, ID id) throws DegraphmalizerException, IOException
-    {
+    private Subgraph commitSubgraphAndVerifyProperties(Props p, ID id) throws DegraphmalizerException {
         final MutableSubgraph sg = new MutableSubgraph();
 
         p.modifySubgraph(sg);
@@ -534,8 +533,7 @@ class Props
             sg.property(e.getKey(), e.getValue());
     }
 
-    void assertOK(Element v) throws IOException
-    {
+    void assertOK(Element v) {
         for(Map.Entry<String,JsonNode> e : properties.entrySet())
         {
             final String name = e.getKey();

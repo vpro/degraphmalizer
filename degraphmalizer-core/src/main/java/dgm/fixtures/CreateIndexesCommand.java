@@ -9,7 +9,6 @@ import dgm.configuration.FixtureConfiguration;
 import dgm.configuration.FixtureIndexConfiguration;
 import dgm.configuration.FixtureTypeConfiguration;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,7 +59,7 @@ public class CreateIndexesCommand implements Command<List<String>> {
         return indexes;
     }
 
-    CreateIndexRequest buildCreateIndexRequest(String indexName, FixtureIndexConfiguration indexConfig) throws IOException {
+    CreateIndexRequest buildCreateIndexRequest(String indexName, FixtureIndexConfiguration indexConfig) {
         CreateIndexRequest request = new CreateIndexRequest(indexName, createSettings(indexConfig));
         for (String typeName : indexConfig.getTypeNames()) {
             FixtureTypeConfiguration typeConfig = indexConfig.getTypeConfig(typeName);

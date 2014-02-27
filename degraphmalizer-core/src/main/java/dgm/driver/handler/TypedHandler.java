@@ -9,8 +9,7 @@ public abstract class TypedHandler<T>
         this.type = type;
     }
 
-    public final boolean handleEvent(Object msg) throws Exception
-    {
+    public final boolean handleEvent(Object msg) {
         // only handle messages
         if (! type.isAssignableFrom(msg.getClass()))
             return false;

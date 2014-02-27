@@ -7,7 +7,6 @@ import dgm.streaming.blueprints.GraphCommandListener;
 import javax.inject.Inject;
 
 import static dgm.streaming.command.GraphCommandBuilder.*;
-import static dgm.streaming.command.GraphCommandBuilder.edge;
 
 /**
  *

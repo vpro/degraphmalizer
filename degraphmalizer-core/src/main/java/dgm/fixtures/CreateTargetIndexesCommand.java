@@ -6,7 +6,6 @@ package dgm.fixtures;
 
 import dgm.configuration.*;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -70,7 +69,7 @@ public class CreateTargetIndexesCommand implements Command<List<String>> {
         return indexes;
     }
 
-    CreateIndexRequest buildCreateIndexRequest(String indexName, FixtureIndexConfiguration indexConfig) throws IOException {
+    CreateIndexRequest buildCreateIndexRequest(String indexName, FixtureIndexConfiguration indexConfig) {
         CreateIndexRequest request = new CreateIndexRequest(indexName, createSettings());
         if (indexConfig != null) {
             for (String typeName : indexConfig.getTypeNames()) {

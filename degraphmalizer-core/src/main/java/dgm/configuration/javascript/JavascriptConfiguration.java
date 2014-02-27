@@ -206,7 +206,7 @@ class JavascriptTypeConfig implements TypeConfig {
 
     final Map<String, WalkConfig> walks = new HashMap<String, WalkConfig>();
 
-    public JavascriptTypeConfig(ObjectMapper objectMapper, String type, Scriptable scope, Scriptable script, IndexConfig indexConfig) throws IOException {
+    public JavascriptTypeConfig(ObjectMapper objectMapper, String type, Scriptable scope, Scriptable script, IndexConfig indexConfig) {
         this.objectMapper = objectMapper;
         this.type = type;
         this.scope = scope;

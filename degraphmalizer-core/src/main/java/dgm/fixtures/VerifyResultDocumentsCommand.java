@@ -78,7 +78,7 @@ public class VerifyResultDocumentsCommand implements Command<List<Pair<String, B
         return ids;
     }
 
-    private boolean verifyDocument(String id, String type, String index) throws IOException, ExecutionException, InterruptedException {
+    private boolean verifyDocument(String id, String type, String index) {
         FixtureIndexConfiguration expectedIndexConfig = fixtureConfigurationProvider.get().getExpectedIndexConfig(index);
 
         if (expectedIndexConfig == null) {
@@ -108,7 +108,7 @@ public class VerifyResultDocumentsCommand implements Command<List<Pair<String, B
         return true;
     }
 
-    private JsonNode getDocument(String id, String type, String index) throws ExecutionException, InterruptedException, IOException {
+    private JsonNode getDocument(String id, String type, String index) {
         try {
 
 
