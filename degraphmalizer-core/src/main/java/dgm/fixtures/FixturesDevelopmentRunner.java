@@ -11,6 +11,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.client.Client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,19 +89,28 @@ public class FixturesDevelopmentRunner implements ConfigurationMonitor, Fixtures
                 List<ID> ids = insertDocumentsCommand.execute();
                 LOG.info("Inserted {} documents", ids.size());
             }
+
+            LOG.info("magnolia:" + this.client.search(new SearchRequest("magnolia")).get().getHits().getTotalHits());
+            LOG.info("poms:" + this.client.search(new SearchRequest("poms")).get().getHits().getTotalHits());
+            LOG.info("vpro_winkel:" + this.client.search(new SearchRequest("vpro_winkel")).get().getHits().getTotalHits());
+
             {
                 List<ID> ids = redegraphmalizeCommand.execute();
                 LOG.info("Degraphmalized {} documents", ids.size());
             }
+
+
             {
                 List<ID> ids = writeResultDocumentsCommand.execute();
                 LOG.info("Written {} result documents", ids.size());
             }
+
             {
-                List<Pair<ID, Boolean>> verifyResults = verifyResultDocumentsCommand.execute();
+                List<Pair<String, Boolean>> verifyResults = verifyResultDocumentsCommand.execute();
                 LOG.info("Checked {} result documents", verifyResults.size());
-                int success = 0, failed = 0;
-                for (Pair<ID, Boolean> result : verifyResults) {
+                int success = 0;
+                int failed = 0;
+                for (Pair<String, Boolean> result : verifyResults) {
                     if (result.b) {
                         success++;
                     } else {

@@ -6,6 +6,10 @@ import dgm.degraphmalizr.degraphmalize.DegraphmalizeRequestType;
 import dgm.degraphmalizr.degraphmalize.JobRequest;
 import dgm.exceptions.DegraphmalizerException;
 import dgm.exceptions.InvalidRequest;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.http.HttpMethod;
@@ -15,26 +19,25 @@ import org.jboss.netty.handler.codec.oneone.OneToOneDecoder;
 /**
  * Transform a HttpRequest into
  */
-public class DegraphmalizeDecoder extends OneToOneDecoder
-{
+public class DegraphmalizeDecoder extends OneToOneDecoder {
     @Override
-    protected final Object decode(ChannelHandlerContext channelHandlerContext, Channel channel, Object o) throws DegraphmalizerException
-    {
+    protected final Object decode(ChannelHandlerContext channelHandlerContext, Channel channel, Object o) throws DegraphmalizerException {
         final HttpRequest request = (HttpRequest) o;
         final DegraphmalizeRequestType requestType = actionTypeFor(request);
 
         // split url /TYPE/ID/ or fail
-        final String[] components = request.getUri().substring(1).split("/");
+        final String[] components = urlDecode(request.getUri().substring(1).split("/"));
 
-        switch (requestType)
-        {
+        switch (requestType){
             case DELETE:
-                if (components.length < 1 || components.length > 4)
-                    throw new InvalidRequest("URL must be of the form '/{index}/{type}/{id}/{version}'");
+                if (components.length < 1 || components.length > 4) {
+                    throw new InvalidRequest("DELETE URL " + request.getUri() + " must be of the form '/{index}/{type}/{id}/{version}'");
+                }
                 break;
             case UPDATE:
-                if (components.length != 4)
-                    throw new InvalidRequest("URL must be of the form '/{index}/{type}/{id}/{version}'");
+                if (components.length != 4) {
+                    throw new InvalidRequest("UPDATE URL " + request.getUri() + " must be of the form '/{index}/{type}/{id}/{version}'");
+                }
                 break;
             default:
                 throw new InvalidRequest("Unsupported operation: " + requestType);
@@ -44,20 +47,31 @@ public class DegraphmalizeDecoder extends OneToOneDecoder
         return new JobRequest(requestType, actionScopeFor(components), getID(components));
     }
 
+    private static String[] urlDecode(String... components) {
+        String[] result = new String[components.length];
+        for (int i = 0; i < result.length; i++) {
+            try {
+                result[i] = URLDecoder.decode(components[i], "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                // cannot happen
+                throw new RuntimeException(e);
+            }
+        }
+        return result;
+    }
+
     // HTTP.method ? DELETE => anti-degraphmalize it
-    private static DegraphmalizeRequestType actionTypeFor(HttpRequest req)
-    {
-        if (HttpMethod.DELETE.equals(req.getMethod()))
+    private static DegraphmalizeRequestType actionTypeFor(HttpRequest req) {
+        if (HttpMethod.DELETE.equals(req.getMethod())) {
             return DegraphmalizeRequestType.DELETE;
+        }
 
         return DegraphmalizeRequestType.UPDATE;
     }
 
-    private static DegraphmalizeRequestScope actionScopeFor(String[] components)
-    {
+    private static DegraphmalizeRequestScope actionScopeFor(String[] components) {
         DegraphmalizeRequestScope requestScope = DegraphmalizeRequestScope.DOCUMENT;
-        switch (components.length)
-        {
+        switch (components.length) {
             case 4:
                 requestScope = DegraphmalizeRequestScope.DOCUMENT;
                 break;
@@ -75,15 +89,13 @@ public class DegraphmalizeDecoder extends OneToOneDecoder
     }
 
 
-    private static ID getID(String[] components)
-    {
+    private static ID getID(String[] components) {
         long version = 0;
         String id = null;
         String type = null;
-        String index = null;
+        String index;
 
-        switch (components.length)
-        {
+        switch (components.length) {
             case 4:
                 version = Long.parseLong(components[3]);
             case 3:

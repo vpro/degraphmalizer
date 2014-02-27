@@ -9,7 +9,7 @@ public class DegraphmalizerException extends RuntimeException
 {
     private final Severity severity;
 
-    public enum Severity { INFO, WARN, ERROR }
+    public enum Severity { DEBUG, INFO, WARN, ERROR }
 
     protected DegraphmalizerException(String msg, Throwable cause)
     {

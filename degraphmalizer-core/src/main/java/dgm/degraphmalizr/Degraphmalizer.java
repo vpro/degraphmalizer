@@ -179,7 +179,7 @@ public class Degraphmalizer implements Degraphmalizr {
     }
 
     private DegraphmalizeResult doUpdate(DegraphmalizeRequest action) throws Exception {
-        log.info("Processing update request for id {} scope {} ", action.id(), action.scope());
+        log.debug("Processing update request for id {} scope {} ", action.id(), action.scope());
 
         List<Future<RecomputeResult>> results;
         switch (action.scope()) {
@@ -259,7 +259,7 @@ public class Degraphmalizer implements Degraphmalizr {
 
             log.debug("Degraphmalize request for {} triggered compute of: {}", id, ids);
         } else {
-            log.info("Degraphmalize request for {} triggered {} computes", id, recomputeRequests.size());
+            log.debug("Degraphmalize request for {} triggered {} computes", id, recomputeRequests.size());
         }
     }
 
@@ -378,7 +378,7 @@ public class Degraphmalizer implements Degraphmalizr {
         }
 
         subgraphmanager.commitSubgraph(action.id(), merged);
-        log.info("Committed subgraph to graph");
+        log.debug("Committed subgraph to graph");
     }
 
     private List<Future<RecomputeResult>> recomputeAffectedDocuments(List<RecomputeRequest> recomputeRequests) throws InterruptedException {

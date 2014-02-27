@@ -46,6 +46,9 @@ public class ExceptionHandler extends SimpleChannelHandler {
     // log according to severity
     void logException(DegraphmalizerException ex) {
         switch (ex.severity()) {
+            case DEBUG:
+                log.debug(ex.getMessage());
+                return;
             case INFO:
                 log.info(ex.getMessage());
                 return;

@@ -37,6 +37,11 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 
+/* *
+ * Run this with e.g
+    -d -r -f /Users/michiel/vpro/degraphmalizer-config/trunk/src/main/conf/fixtures
+ * to run the fixtures
+ */
 public final class Main {
     private static final String LOGBACK_CFG = "logback.configurationFile";
 

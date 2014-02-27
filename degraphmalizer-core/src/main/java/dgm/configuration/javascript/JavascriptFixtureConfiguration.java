@@ -47,7 +47,7 @@ public class JavascriptFixtureConfiguration implements FixtureConfiguration {
 
     private Map<String, JavascriptFixtureIndexConfiguration> indexConfigs = new LinkedHashMap<String, JavascriptFixtureIndexConfiguration>();
     private Map<String, JavascriptFixtureIndexConfiguration> expectedConfigs = new LinkedHashMap<String, JavascriptFixtureIndexConfiguration>();
-    private File resultsDir = null;
+    private final File resultsDir;
 
     private static final Logger log = LoggerFactory.getLogger(JavascriptFixtureConfiguration.class);
 
@@ -73,6 +73,7 @@ public class JavascriptFixtureConfiguration implements FixtureConfiguration {
             log.error("Could not parse fixture data. Illegal json: " + e.getMessage());
             throw e.getJpe();
         }
+        log.info("JS Fixtures configuration for " + resultsDir + " " + indexConfigs.size() + " " + expectedConfigs.size());
     }
 
     @Override
@@ -111,8 +112,8 @@ public class JavascriptFixtureConfiguration implements FixtureConfiguration {
  * An index config contains a number of mappings of type names to type configurations.
  */
 class JavascriptFixtureIndexConfiguration implements FixtureIndexConfiguration {
-    private Map<String, FixtureTypeConfiguration> typeConfigs = new LinkedHashMap<String, FixtureTypeConfiguration>();
-    private Settings settings;
+    private final Map<String, FixtureTypeConfiguration> typeConfigs = new LinkedHashMap<String, FixtureTypeConfiguration>();
+    private final Settings settings;
 
     JavascriptFixtureIndexConfiguration(File configDir) throws IOException {
         for (File typeDir : configDir.listFiles(FixtureUtil.onlyDirsFilter())) {
@@ -121,6 +122,8 @@ class JavascriptFixtureIndexConfiguration implements FixtureIndexConfiguration {
         File file = new File(configDir, "settings.json");
         if (file.exists()) {
             settings = ImmutableSettings.settingsBuilder().loadFromUrl(file.toURI().toURL()).build();
+        } else {
+            settings = null;
         }
 
     }
@@ -165,6 +168,7 @@ class JavascriptFixtureTypeConfiguration implements FixtureTypeConfiguration {
     JavascriptFixtureTypeConfiguration(File configDir) throws IOException {
         mapping = resolveMapping(configDir);
         readDocuments(configDir);
+        System.out.println("For " + configDir + " " + documentsById.keySet());
     }
 
     @Override

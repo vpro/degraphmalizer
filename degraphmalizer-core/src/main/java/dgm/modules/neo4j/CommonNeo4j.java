@@ -54,6 +54,9 @@ public class CommonNeo4j extends ServiceModule
         final Map<String, String> settings = new HashMap<String, String>();
         settings.put("cache_type", "soft");
 
+        // See http://docs.neo4j.org/chunked/stable/configuration-logical-logs.html for valid values
+        settings.put("keep_logical_logs", "2 days");
+
         final Neo4jGraph graph = new Neo4jGraph(dataDir, settings);
 
         // quickly get vertices by ID

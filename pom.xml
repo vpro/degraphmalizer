@@ -4,7 +4,7 @@
 
   <groupId>nl.vpro.degraphmalizer</groupId>
   <artifactId>degraphmalizer-parent</artifactId>
-  <version>0.2-SNAPSHOT</version>
+  <version>0.5-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <licenses>
@@ -27,6 +27,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <github.maven.repository>file:../mvn-repo</github.maven.repository>
 
     <!-- Keep in sync with version of your ElasticSearch production deployment -->
     <elasticsearch.version>0.19.11</elasticsearch.version>
@@ -251,5 +252,40 @@
       </plugin>
 
     </plugins>
+
   </build>
+
+  <profiles>
+    <profile>
+      <id>default</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <distributionManagement>
+        <repository>
+          <id>repo</id>
+          <url>${github.maven.repository}/releases</url>
+        </repository>
+        <snapshotRepository>
+          <id>snapshot-repo</id>
+          <url>${github.maven.repository}/snapshots</url>
+        </snapshotRepository>
+      </distributionManagement>
+    </profile>
+    <profile>
+      <id>vpro</id>
+      <distributionManagement>
+        <repository>
+          <id>nexus</id>
+          <name>Nexus releases</name>
+          <url>http://nexus.vpro.nl/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+          <id>nexus</id>
+          <name>Nexus snapshots</name>
+          <url>http://nexus.vpro.nl/content/repositories/snapshots</url>
+        </snapshotRepository>
+      </distributionManagement>
+    </profile>
+  </profiles>
 </project>
