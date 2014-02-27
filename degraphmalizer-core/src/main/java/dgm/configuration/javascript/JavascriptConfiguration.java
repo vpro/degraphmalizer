@@ -1,13 +1,23 @@
 package dgm.configuration.javascript;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Predicate;
+import com.tinkerpop.blueprints.Direction;
 import dgm.JSONUtilities;
 import dgm.Subgraph;
 import dgm.configuration.*;
 import dgm.exceptions.ConfigurationException;
+import dgm.exceptions.ValueIsAbsentException;
 import dgm.graphs.Subgraphs;
 import dgm.modules.elasticsearch.ResolvedPathElement;
 import dgm.trees.Tree;
 import dgm.trees.Trees;
+import org.mozilla.javascript.*;
+import org.mozilla.javascript.tools.shell.Global;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -17,17 +27,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.mozilla.javascript.*;
-import org.mozilla.javascript.tools.shell.Global;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Predicate;
-import com.tinkerpop.blueprints.Direction;
 
 /**
  * Load configuration from javascript files in a directory
@@ -509,6 +508,13 @@ class JavascriptPropertyConfig implements PropertyConfig {
             LOG.error(e.getMessage(), e);
         } catch (IOException e) {
             LOG.error(e.getMessage(), e);
+        } catch (WrappedException e) {
+            // To make catching incomplete trees work.
+            Throwable throwable = e.getWrappedException();
+            if (throwable instanceof ValueIsAbsentException) {
+                throw (ValueIsAbsentException)throwable;
+            }
+            throw e;
         } finally {
             Context.exit();
         }

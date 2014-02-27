@@ -69,7 +69,8 @@ public class QueryFunction implements Function<Pair<Edge, Vertex>, Optional<Reso
 
         GetResponse r = documentProvider.get(id);
 
-        if ((r.version() == -1) || !r.exists()) {
+        if ((r.version() == -1) || !r.exists())
+        {
             log.debug("Document {} does not exist!", id);
             return Optional.of(new ResolvedPathElement(Optional.<GetResponse>absent(), pair.a, pair.b));
         }

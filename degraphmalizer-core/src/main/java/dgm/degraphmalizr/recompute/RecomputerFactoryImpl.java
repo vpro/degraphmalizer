@@ -1,5 +1,14 @@
 package dgm.degraphmalizr.recompute;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Function;
+import com.google.common.base.Optional;
+import com.google.common.collect.Iterables;
+import com.tinkerpop.blueprints.Edge;
+import com.tinkerpop.blueprints.Graph;
+import com.tinkerpop.blueprints.Vertex;
 import dgm.GraphUtilities;
 import dgm.ID;
 import dgm.configuration.PropertyConfig;
@@ -8,34 +17,24 @@ import dgm.configuration.WalkConfig;
 import dgm.exceptions.*;
 import dgm.modules.bindingannotations.Fetches;
 import dgm.modules.bindingannotations.Recomputes;
+import dgm.modules.elasticsearch.DocumentProvider;
 import dgm.modules.elasticsearch.QueryFunction;
 import dgm.modules.elasticsearch.ResolvedPathElement;
 import dgm.trees.Pair;
 import dgm.trees.Tree;
+import dgm.trees.TreeEntry;
 import dgm.trees.Trees;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-
-import javax.inject.Inject;
-
+import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
 import org.nnsoft.guice.sli4j.core.InjectLogger;
 import org.slf4j.Logger;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Optional;
-import com.google.common.collect.Iterables;
-import com.tinkerpop.blueprints.Edge;
-import com.tinkerpop.blueprints.Graph;
-import com.tinkerpop.blueprints.Vertex;
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 
 import static dgm.GraphUtilities.toJSON;
 
@@ -50,19 +49,21 @@ public class RecomputerFactoryImpl implements Recomputer {
     protected final ExecutorService fetchQueue;
     protected final QueryFunction queryFn;
     protected final ObjectMapper objectMapper;
+    protected final DocumentProvider documentProvider;
 
     @Inject
     public RecomputerFactoryImpl(Client client, Graph graph,
                                  @Fetches ExecutorService fetchQueue,
                                  @Recomputes ExecutorService recomputeQueue,
                                  ObjectMapper objectMapper,
-                                 QueryFunction queryFunction) {
+                                 QueryFunction queryFunction, DocumentProvider documentProvider) {
         this.fetchQueue = fetchQueue;
         this.recomputeQueue = recomputeQueue;
         this.graph = graph;
         this.client = client;
         this.queryFn = queryFunction;
         this.objectMapper = objectMapper;
+        this.documentProvider = documentProvider;
     }
 
     class Recomputer {
@@ -83,6 +84,7 @@ public class RecomputerFactoryImpl implements Recomputer {
             }
 
             boolean isAbsent = false;
+            Tree<Pair<Edge, Vertex>> absentTree = null;
 
             for (Map.Entry<String, WalkConfig> walkCfg : request.config.walks().entrySet()) {
                 // walk graph, and fetch all the children in the opposite direction of the walk
@@ -104,6 +106,7 @@ public class RecomputerFactoryImpl implements Recomputer {
                 // TODO this does not work at present as Trees.optional behaves 'lazy'
                 if (!fullTree.isPresent()) {
                     isAbsent = true;
+                    absentTree = tree;
                     break;
                 }
 
@@ -113,6 +116,7 @@ public class RecomputerFactoryImpl implements Recomputer {
                         walkResults.put(propertyCfg.getKey(), propertyCfg.getValue().reduce(fullTree.get()));
                     } catch (ValueIsAbsentException v) {
                         isAbsent = true;
+                        absentTree = tree;
                         break;
                     }
                 }
@@ -123,8 +127,9 @@ public class RecomputerFactoryImpl implements Recomputer {
                 log.debug("Some results were absent, aborting re-computation for {}", request.root.id());
 
                 // TODO return list of expired nodes/IDs
-                //return factory.recomputeExpired(request, Collections.<ID>emptyList());
-                return null;
+                Collection<ID> ids = computeAbsentIDs(absentTree);
+                log.info("Aborted recompute for {} because graph is incomplete for this node", request.root.id().toString());
+                throw new ExpiredException(ids);
 
             }
 
@@ -154,10 +159,10 @@ public class RecomputerFactoryImpl implements Recomputer {
         }
 
         private JsonNode getFromES() throws IOException {
-// TODO oops this doesn't work at the moment, we have the REDUCE results in walkResults :(
-//            // we are always on the root node of a walk result, so use that if it's there
-//            if(walkResults != null && !walkResults.isEmpty())
-//                return walkResults.values().iterator().next();
+            // TODO oops this doesn't work at the moment, we have the REDUCE results in walkResults :(
+            //            // we are always on the root node of a walk result, so use that if it's there
+            //            if(walkResults != null && !walkResults.isEmpty())
+            //                return walkResults.values().iterator().next();
 
             // when no walks are defined, we just get the document ourselves.
 
@@ -226,6 +231,84 @@ public class RecomputerFactoryImpl implements Recomputer {
 
             return new RecomputeResult(ir, rawDocument, document, walkResults);
         }
+    }
+
+    private Collection<ID> computeAbsentIDs(Tree<Pair<Edge, Vertex>> absentTree) {
+        List<ID> ids = new ArrayList<ID>();
+        final Tree<DocumentResult> docTree;
+        try {
+            docTree = Trees.pmap(fetchQueue, new Function<Pair<Edge, Vertex>, DocumentResult>() {
+                @Override
+                public DocumentResult apply(Pair<Edge, Vertex> pair) {
+                    final ID id = GraphUtilities.getID(objectMapper, pair.b);
+                    if (id == null) {
+                        return new DocumentResult(id, DocumentState.NODOCUMENT);
+                    }
+
+                    if (id.version() == 0) {
+                        return new DocumentResult(id, DocumentState.SYMBOLIC);
+                    }
+
+                    GetResponse r = documentProvider.get(id);
+
+                    if ((r.version() == -1) || !r.exists()) {
+                        return new DocumentResult(id, DocumentState.NOTFOUND);
+                    }
+
+                    if (r.version() != id.version()) {
+                        return new DocumentResult(id, DocumentState.EXPIRED);
+                    }
+
+                    return new DocumentResult(id, DocumentState.FOUND);
+                }
+            }, absentTree);
+
+            for (TreeEntry<DocumentResult> treeEntry : Trees.bfsWalk(docTree)) {
+                DocumentResult rpe = treeEntry.getValue();
+                if (rpe.getState()==DocumentState.EXPIRED) {
+                    ids.add(rpe.getId());
+                }
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return ids;
+    }
+
+    private class DocumentResult {
+        ID id;
+        DocumentState state;
+
+        private DocumentResult(ID id, DocumentState state) {
+            this.id = id;
+            this.state = state;
+        }
+
+        public ID getId() {
+            return id;
+        }
+
+        public void setId(ID id) {
+            this.id = id;
+        }
+
+        public DocumentState getState() {
+            return state;
+        }
+
+        public void setState(DocumentState state) {
+            this.state = state;
+        }
+    }
+
+    private enum DocumentState {
+        NOTFOUND,
+        EXPIRED,
+        FOUND,
+        SYMBOLIC,
+        NODOCUMENT
     }
 
     /**

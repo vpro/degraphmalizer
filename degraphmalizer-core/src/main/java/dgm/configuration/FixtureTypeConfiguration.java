@@ -6,12 +6,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 /**
  * @author Ernst Bunders
  */
-public interface FixtureTypeConfiguration
-{
-    public JsonNode getMapping();
-    public Iterable<JsonNode> getDocuments();
-    public Iterable<String>getDocumentIds();
-    public JsonNode getDocumentById(String id);
-    public boolean hasDocuments();
+public interface FixtureTypeConfiguration {
+    JsonNode getMapping();
+    Iterable<JsonNode> getDocuments();
+    Iterable<String>getDocumentIds();
+    JsonNode getDocumentById(String id);
+    boolean hasDocuments();
 
 }
