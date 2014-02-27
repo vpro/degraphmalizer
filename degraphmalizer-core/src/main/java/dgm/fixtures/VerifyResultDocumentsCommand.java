@@ -68,6 +68,9 @@ public class VerifyResultDocumentsCommand implements Command<List<Pair<String, B
 
 
         FixtureTypeConfiguration fixtureTypeConfiguration =  fixtureConfigurationProvider.get().getExpectedIndexConfig(indexName).getTypeConfig(typeName);
+        if (fixtureTypeConfiguration == null) {
+            throw new RuntimeException("Could not find fixturesConfiguration for " + indexName + "/" + typeName);
+        }
         for (String documentId : fixtureTypeConfiguration.getDocumentIds()) {
             String id = indexName + ":" + typeName + ":" + documentId;
             LOG.debug("Verifying document:  {}", id);
