@@ -29,8 +29,8 @@ public class RandomizedGraphBuilder
         if(s[1].length() != 2 || s[3].length() != 3)
             throw new RuntimeException("Invalid specification format, '--' and '-->' are used to specify edges");
 
-        final ID tail = parseIDStr(s[0], "Tail");
-        final ID head = parseIDStr(s[4], "Head");
+        final ID tail = parseIDStr(tail_str, "Tail");
+        final ID head = parseIDStr(head_str, "Head");
 
         return new EdgeID(tail, label, head);
     }

@@ -72,12 +72,7 @@ public class MinimalTreeTest {
     final static Function<Pair<Edge, Vertex>, String> show = new Function<Pair<Edge, Vertex>, String>() {
         @Override
         public String apply(Pair<Edge, Vertex> input) {
-            final StringBuilder sb = new StringBuilder("(");
-            sb.append(nullSafeToString(input.a));
-            sb.append("--");
-            sb.append(nullSafeToString(input.b));
-            sb.append(')');
-            return sb.toString();
+            return "(" + nullSafeToString(input.a) + "--" + nullSafeToString(input.b) + ')';
         }
     };
 

@@ -168,13 +168,7 @@ public final class GraphUtilities {
     }
 
     private static String getStringRepresentation(ObjectMapper om, final EdgeID edgeID) {
-        final StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(toJSON(om, edgeID.tail()).toString())
-                .append("--")
-                .append(edgeID.label())
-                .append("->")
-                .append(toJSON(om, edgeID.head()).toString());
-        return stringBuilder.toString();
+        return toJSON(om, edgeID.tail()).toString() + "--" + edgeID.label() + "->" + toJSON(om, edgeID.head()).toString();
     }
 
 

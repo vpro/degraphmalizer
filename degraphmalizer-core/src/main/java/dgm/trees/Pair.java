@@ -25,12 +25,7 @@ public class Pair<A,B>
     @Override
 	public final String toString()
 	{
-		final StringBuilder s = new StringBuilder("<");
-		s.append(getStringRepresentation(a));
-		s.append(",");
-		s.append(getStringRepresentation(b));
-		s.append(">");
-		return s.toString();
+        return "<" + getStringRepresentation(a) + "," + getStringRepresentation(b) + ">";
 	}
 	
 	// TODO it's a hack...
@@ -48,13 +43,8 @@ public class Pair<A,B>
 		if (x instanceof Edge)
 		{
 			final Edge e = (Edge)x;
-			final StringBuilder sb = new StringBuilder();
-			sb.append(getStringRepresentation(e.getVertex(Direction.OUT)));
-			sb.append("---[");
-			sb.append(e.getLabel());
-			sb.append("]--->");
-			sb.append(getStringRepresentation(e.getVertex(Direction.IN)));
-			return sb.toString().trim();
+			String stringRepresentation = getStringRepresentation(e.getVertex(Direction.OUT)) + "---[" + e.getLabel() + "]--->" + getStringRepresentation(e.getVertex(Direction.IN));
+            return stringRepresentation.trim();
 		}
 
 		return x.toString().trim();
