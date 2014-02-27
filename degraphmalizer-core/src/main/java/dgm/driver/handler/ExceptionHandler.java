@@ -48,17 +48,16 @@ public class ExceptionHandler extends SimpleChannelHandler {
         switch (ex.severity()) {
             case DEBUG:
                 log.debug(ex.getMessage());
-                return;
+                break;
             case INFO:
                 log.info(ex.getMessage());
-                return;
+                break;
             case WARN:
                 log.warn(ex.getMessage(), ex);
-                return;
+                break;
             case ERROR:
             default:
                 log.error(ex.getMessage(), ex);
-                return;
         }
     }
 
