@@ -72,12 +72,14 @@ public class QueryFunction implements Function<Pair<Edge, Vertex>, Optional<Reso
 
         GetResponse r = documentProvider.get(id);
 
+        // TODO should this not be absent  ?
         if ((r.version() == -1) || !r.exists())
         {
             log.debug("Document {} does not exist!", id);
             return Optional.of(new ResolvedPathElement(Optional.<GetResponse>absent(), pair.a, pair.b));
         }
 
+        // TODO should this not be 'expired' instead of completely absent ?
         // query has expired in the meantime
         if (r.version() != id.version())
         {
