@@ -25,7 +25,7 @@ public class ExceptionHandler extends SimpleChannelHandler {
     // TODO use annotated POJO messages and inject the objectmapper
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    Logger log = LoggerFactory.getLogger(ExceptionHandler.class);
+    final Logger log = LoggerFactory.getLogger(ExceptionHandler.class);
 
     @Override
     public final void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {

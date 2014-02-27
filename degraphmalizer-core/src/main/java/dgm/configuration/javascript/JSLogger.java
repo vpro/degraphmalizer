@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 
 
 public class JSLogger {
-    Logger log = LoggerFactory.getLogger(JSLogger.class);
+    final Logger log = LoggerFactory.getLogger(JSLogger.class);
 
     public void log(String msg) {
         log.info(msg);

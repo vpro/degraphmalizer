@@ -19,10 +19,10 @@ import org.slf4j.LoggerFactory;
  */
 public class JavascriptNode
 {
-    Logger log = LoggerFactory.getLogger(JavascriptNode.class);
+    final Logger log = LoggerFactory.getLogger(JavascriptNode.class);
 
-    ResolvedPathElement resolvedPathElement;
-    Scriptable scope;
+    final ResolvedPathElement resolvedPathElement;
+    final Scriptable scope;
 
 
     public JavascriptNode(Scriptable scope, ResolvedPathElement resolvedPathElement)

@@ -45,8 +45,8 @@ public class JavascriptFixtureConfiguration implements FixtureConfiguration {
     public static final String RESULTS_DIR = "results";
     public static final String EXPECTED_DIR = "expected";
 
-    private Map<String, JavascriptFixtureIndexConfiguration> indexConfigs = new LinkedHashMap<String, JavascriptFixtureIndexConfiguration>();
-    private Map<String, JavascriptFixtureIndexConfiguration> expectedConfigs = new LinkedHashMap<String, JavascriptFixtureIndexConfiguration>();
+    private final Map<String, JavascriptFixtureIndexConfiguration> indexConfigs = new LinkedHashMap<String, JavascriptFixtureIndexConfiguration>();
+    private final Map<String, JavascriptFixtureIndexConfiguration> expectedConfigs = new LinkedHashMap<String, JavascriptFixtureIndexConfiguration>();
     private final File resultsDir;
 
     private static final Logger log = LoggerFactory.getLogger(JavascriptFixtureConfiguration.class);
@@ -245,7 +245,7 @@ class JavascriptFixtureTypeConfiguration implements FixtureTypeConfiguration {
 }
 
 class FixtureConfigurationException extends RuntimeException {
-    private JsonProcessingException jpe;
+    private final JsonProcessingException jpe;
 
     FixtureConfigurationException(JsonProcessingException jpe, File cause1) {
         super("Could not parse json file [" + cause1.getAbsolutePath() + "] because of:" + jpe.getMessage(), jpe);

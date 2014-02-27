@@ -47,7 +47,7 @@ class ConfigurationReloader implements FilesystemMonitor, Provider<Configuration
          * will continue to run with the previous valid configuration.
          */
         final Provider<Configuration> confLoader = new Provider<Configuration>() {
-            private AtomicReference<Configuration> configuration =
+            private final AtomicReference<Configuration> configuration =
                 new AtomicReference<Configuration>(AbstractConfigurationModule.createConfiguration(OM, scriptFolder, libraries));
 
             @Override

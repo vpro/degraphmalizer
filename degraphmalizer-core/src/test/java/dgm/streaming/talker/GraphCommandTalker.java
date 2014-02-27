@@ -10,7 +10,7 @@ import static dgm.streaming.command.GraphCommandBuilder.*;
 
 public class GraphCommandTalker extends Talker<GraphCommand> {
     private int counter = 0;
-    private Iterator<GraphCommand> commandsIterator;
+    private final Iterator<GraphCommand> commandsIterator;
 
     public GraphCommandTalker(SomeOne<GraphCommand> someOne) {
         super(someOne);

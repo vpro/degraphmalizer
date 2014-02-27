@@ -68,7 +68,7 @@ public final class GraphCommandBuilder {
 
     public static final class NodeCommandBuilder {
         private final GraphCommandType graphCommandType;
-        private List<NodeBuilder> nodeBuilders = new ArrayList<NodeBuilder>();
+        private final List<NodeBuilder> nodeBuilders = new ArrayList<NodeBuilder>();
 
         private NodeCommandBuilder(GraphCommandType graphCommandType, NodeBuilder nodeBuilder) {
             nodeBuilders.add(nodeBuilder);
@@ -95,7 +95,7 @@ public final class GraphCommandBuilder {
 
     public static class NodeBuilder {
         private final String nodeName;
-        private Map<String, Object> properties = new HashMap<String, Object>();
+        private final Map<String, Object> properties = new HashMap<String, Object>();
 
         NodeBuilder(String nodeName) {
             this.nodeName = nodeName;

@@ -12,7 +12,7 @@ import java.io.InputStreamReader;
  * To change this template use File | Settings | File Templates.
  */
 public class GraphTalker extends Talker<String> {
-    private BufferedReader br = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/graph.txt")));
+    private final BufferedReader br = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/graph.txt")));
 
     public GraphTalker(SomeOne<String> someOne) {
         super(someOne);

@@ -12,7 +12,7 @@ import org.jboss.netty.handler.codec.http.HttpChunk;
  * To change this template use File | Settings | File Templates.
  */
 public class StringSomeOne implements SomeOne<String> {
-    private Channel channel;
+    private final Channel channel;
 
     StringSomeOne(Channel channel) {
         this.channel = channel;

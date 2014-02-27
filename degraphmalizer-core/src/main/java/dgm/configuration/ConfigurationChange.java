@@ -13,9 +13,9 @@ import java.util.List;
  */
 public class ConfigurationChange
 {
-    private List<String> indexesAdded = new ArrayList<String>();
-    private List<String> indexesRemoved = new ArrayList<String>();
-    private List<String> indexesChanged = new ArrayList<String>();
+    private final List<String> indexesAdded = new ArrayList<String>();
+    private final List<String> indexesRemoved = new ArrayList<String>();
+    private final List<String> indexesChanged = new ArrayList<String>();
 
     public ConfigurationChange()
     {}

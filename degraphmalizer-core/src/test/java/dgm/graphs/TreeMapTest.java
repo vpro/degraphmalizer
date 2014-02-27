@@ -40,8 +40,8 @@ import static org.fest.assertions.Assertions.assertThat;
 public class TreeMapTest {
     LocalGraph lg;
     RandomizedGraphBuilder gb;
-    ObjectMapper om = new ObjectMapper();
-    ExecutorService executor = Executors.newCachedThreadPool();
+    final ObjectMapper om = new ObjectMapper();
+    final ExecutorService executor = Executors.newCachedThreadPool();
 
     @BeforeMethod
     public void clearGraph() {
@@ -127,8 +127,8 @@ public class TreeMapTest {
     }
 
     class Node {
-        Edge edge;
-        Vertex vertex;
+        final Edge edge;
+        final Vertex vertex;
 
         Node(Vertex vertex, Edge edge) {
             this.vertex = vertex;

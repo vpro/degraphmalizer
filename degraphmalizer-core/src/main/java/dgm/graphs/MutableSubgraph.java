@@ -28,7 +28,7 @@ public class MutableSubgraph implements Subgraph
         ID other;
         Direction direction;
         String label;
-        Map<String,JsonNode> properties = new HashMap<String,JsonNode>();
+        final Map<String,JsonNode> properties = new HashMap<String,JsonNode>();
 
         Edge(ID other, Direction d, String label)
         {

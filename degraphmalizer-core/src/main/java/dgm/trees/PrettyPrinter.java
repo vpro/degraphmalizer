@@ -7,7 +7,7 @@ public class PrettyPrinter<T> implements TreeVisitor<T>
 {
     protected final Function<T,String> show;
     protected int currentLevel = 0;
-    protected StringBuilder currentOutput = new StringBuilder();
+    protected final StringBuilder currentOutput = new StringBuilder();
 
     public PrettyPrinter(Function<T,String> show)
     {

@@ -8,7 +8,7 @@ public abstract class Talker<T> implements Runnable
 {
     final private static Logger log = LoggerFactory.getLogger(Talker.class);
 
-    private SomeOne<T> someOne;
+    private final SomeOne<T> someOne;
     boolean active = false;
 
     Thread t;

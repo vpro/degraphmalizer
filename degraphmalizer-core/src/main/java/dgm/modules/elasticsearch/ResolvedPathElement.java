@@ -8,9 +8,9 @@ import com.tinkerpop.blueprints.Vertex;
 
 public class ResolvedPathElement
 {
-    private Optional<GetResponse> getResponse;
-    private Edge edge;
-    private Vertex vertex;
+    private final Optional<GetResponse> getResponse;
+    private final Edge edge;
+    private final Vertex vertex;
 
     public ResolvedPathElement(Optional<GetResponse> getResponse, Edge edge, Vertex vertex)
     {

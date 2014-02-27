@@ -51,7 +51,7 @@ public class Configurations {
         return configs;
     }
 
-    public static Predicate<URL> JS = new Predicate<URL>() {
+    public static final Predicate<URL> JS = new Predicate<URL>() {
         @Override
         public boolean apply(URL url) {
             return url.getPath().endsWith(".js");
@@ -60,7 +60,7 @@ public class Configurations {
 
 
     //
-    private static PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+    private static final PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 
     public static List<URL> list(String directory, Predicate<URL> filter) throws IOException {
         List<URL> result = new ArrayList<URL>();
