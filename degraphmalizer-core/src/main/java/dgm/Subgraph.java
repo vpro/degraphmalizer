@@ -16,7 +16,7 @@ how is this interface complete:
 */
 public interface Subgraph
 {
-    enum Direction { INWARDS, OUTWARDS };
+    enum Direction { INWARDS, OUTWARDS }
 
     interface Edge {
         ID other();
