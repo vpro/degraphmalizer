@@ -171,7 +171,7 @@ public final class Main {
         final int port = Integer.parseInt(opt.transport.get(1));
         final String bindhost = opt.bindhost;
 
-        log.info("Connecting to ES cluster:" + cluster + " bindhost: " + bindhost + " host: " + host + " port:" + port);
+        System.out.println("Connecting to ES cluster:" + cluster + " bindhost: " + bindhost + " host: " + host + " port:" + port);
 
         modules.add(new NodeES(cluster, bindhost, host, port));
     }
