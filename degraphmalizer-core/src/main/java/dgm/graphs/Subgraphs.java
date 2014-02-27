@@ -95,7 +95,7 @@ public class Subgraphs
     /**
      * If the Subgraph if commited with ID {@code center}, compute the {@link EdgeID} for this {@code edge}.
      */
-    public static final EdgeID edgeID(final ID center, final Subgraph.Edge edge)
+    public static EdgeID edgeID(final ID center, final Subgraph.Edge edge)
     {
 
         switch (edge.direction())

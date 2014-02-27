@@ -36,13 +36,13 @@ public class RandomIdentifierGenerator
             "sausage,bowl,flabbergasted,haberdashery,shenanigans,pop,termites,ding,feline,canine,rustic,crook," +
             "reservoir,face,booty,pony,snap,rear,moose,cashew,rummage").replace(" ",",").split(",");
 
-    public final static String randomString()
+    public static String randomString()
     {
         return randomString(new Random(System.currentTimeMillis()).nextInt(Integer.MAX_VALUE));
     }
 
     // no guarantee about randomness
-    public final static String randomWord(int index)
+    public static String randomWord(int index)
     {
         return words[index % words.length];
     }
@@ -56,7 +56,7 @@ public class RandomIdentifierGenerator
         return randomWord(index) + capitalize(rndStr);
     }
 
-    public final static String capitalize(String s)
+    public static String capitalize(String s)
     {
         return s.substring(0, 1).toUpperCase() + s.substring(1, s.length());
     }
