@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -39,7 +40,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Ernst Bunders
  */
 public class JavascriptFixtureConfiguration implements FixtureConfiguration {
-    public static final String MAPPING_FILE_NAME = "mapping.json";
+
+
+    static final String MAPPING_FILE_NAME = "mapping";
 
     public static final String DATA_DIR = "data";
     public static final String RESULTS_DIR = "results";
@@ -49,7 +52,7 @@ public class JavascriptFixtureConfiguration implements FixtureConfiguration {
     private final Map<String, JavascriptFixtureIndexConfiguration> expectedConfigs = new LinkedHashMap<String, JavascriptFixtureIndexConfiguration>();
     private final File resultsDir;
 
-    private static final Logger log = LoggerFactory.getLogger(JavascriptFixtureConfiguration.class);
+    static final Logger LOG = LoggerFactory.getLogger(JavascriptFixtureConfiguration.class);
 
     public JavascriptFixtureConfiguration(File configDir) throws IOException {
         if (! configDir.exists()) {
@@ -70,10 +73,10 @@ public class JavascriptFixtureConfiguration implements FixtureConfiguration {
                 }
             }
         } catch (FixtureConfigurationException e) {
-            log.error("Could not parse fixture data. Illegal json: " + e.getMessage());
+            LOG.error("Could not parse fixture data. Illegal json: " + e.getMessage());
             throw e.getJpe();
         }
-        log.info("JS Fixtures configuration for " + resultsDir + " " + indexConfigs.size() + " " + expectedConfigs.size());
+        LOG.info("JS Fixtures configuration for " + resultsDir + " " + indexConfigs.size() + " " + expectedConfigs.size());
     }
 
     @Override
@@ -206,7 +209,7 @@ class JavascriptFixtureTypeConfiguration implements FixtureTypeConfiguration {
         for (File file : configDir.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
-                return (!JavascriptFixtureConfiguration.MAPPING_FILE_NAME.equals(name)) && name.endsWith(".json");
+                return name.endsWith(".json");
             }
         })) {
             try {
@@ -228,13 +231,23 @@ class JavascriptFixtureTypeConfiguration implements FixtureTypeConfiguration {
      */
     private JsonNode resolveMapping(File configDir) throws IOException {
         File mf = new File(configDir, JavascriptFixtureConfiguration.MAPPING_FILE_NAME);
-        if (mf.exists() && mf.canRead())
+        if (mf.exists() && mf.canRead()) {
+            String mappingUrl = FileUtils.readFileToString(mf);
+            URL url;
+            if (mappingUrl.startsWith("classpath:")) {
+                url = getClass().getClassLoader().getResource(mappingUrl.trim().substring("classpath:".length()));
+                if (url == null) {
+                    JavascriptFixtureConfiguration.LOG.warn("Cannot find " + mappingUrl.trim());
+                }
+            } else {
+                url = new URL(mappingUrl);
+            }
             try {
-                return FixtureUtil.mapper.readTree(FileUtils.readFileToString(mf));
+                return FixtureUtil.mapper.readTree(url.openStream());
             } catch (JsonProcessingException e) {
                 throw new FixtureConfigurationException(e, mf);
             }
-
+        }
         return null;
     }
 
