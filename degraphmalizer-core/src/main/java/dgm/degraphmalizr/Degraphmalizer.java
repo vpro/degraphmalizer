@@ -100,6 +100,7 @@ public class Degraphmalizer implements Degraphmalizr {
 
         // we cannot handle this request!
         if (Iterables.isEmpty(configs)) {
+            // TODO: Bad pattern: exception driven code
             throw new NoConfiguration(id);
         }
 
