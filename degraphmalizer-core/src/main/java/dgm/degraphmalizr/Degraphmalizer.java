@@ -23,13 +23,11 @@ import dgm.trees.Trees;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.concurrent.ConcurrentUtils;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.client.Client;
@@ -100,8 +98,10 @@ public class Degraphmalizer implements Degraphmalizr {
 
         // we cannot handle this request!
         if (Iterables.isEmpty(configs)) {
-            // TODO: Bad pattern: exception driven code
-            throw new NoConfiguration(id);
+            final DegraphmalizeResult result = new DegraphmalizeResult(id, Collections.<Future<RecomputeResult>>emptyList());
+            log.debug("Could not find configuration for " + id.index(), id.type());
+            callback.complete(result);
+            return ConcurrentUtils.constantFuture(result);
         }
 
         // construct the action object
@@ -118,7 +118,7 @@ public class Degraphmalizer implements Degraphmalizr {
                 try {
                     final DegraphmalizeRequestType requestType = action.type();
                     callback.started(action);
-                    DegraphmalizeResult result;
+                    final DegraphmalizeResult result;
                     switch (requestType) {
                         case UPDATE:
                             result = doUpdate(action);
@@ -182,7 +182,7 @@ public class Degraphmalizer implements Degraphmalizr {
     private DegraphmalizeResult doUpdate(DegraphmalizeRequest action) throws Exception {
         log.debug("Processing update request for id {} scope {} ", action.id(), action.scope());
 
-        List<Future<RecomputeResult>> results;
+        final List<Future<RecomputeResult>> results;
         switch (action.scope()) {
             case INDEX:
                 Iterable<Vertex> vertexIterator = GraphUtilities.findVerticesInIndex(graph, action.id().index());

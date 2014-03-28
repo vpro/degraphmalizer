@@ -36,13 +36,13 @@ public class Handler extends SimpleChannelHandler {
         final DegraphmalizeCallback callback = new DegraphmalizeCallback() {
             @Override
             public void started(DegraphmalizeRequest request) {
-                log.info("Started degraphmalization for {}", request);
+                log.debug("Started degraphmalization for {}", request);
             }
 
             @Override
             public void complete(DegraphmalizeResult result) {
                 // write completion message and close channel
-                log.info("Completed degraphmalization for {}", result);
+                log.debug("Completed degraphmalization for {}", result);
                 ctx.getChannel().write(result).addListener(ChannelFutureListener.CLOSE);
             }
 

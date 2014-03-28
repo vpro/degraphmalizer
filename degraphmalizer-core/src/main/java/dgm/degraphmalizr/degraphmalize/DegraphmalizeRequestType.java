@@ -1,6 +1,5 @@
 package dgm.degraphmalizr.degraphmalize;
 
-public enum DegraphmalizeRequestType
-{
+public enum DegraphmalizeRequestType {
     UPDATE, DELETE
 }

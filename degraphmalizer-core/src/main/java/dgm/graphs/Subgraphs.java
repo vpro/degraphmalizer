@@ -1,19 +1,21 @@
 package dgm.graphs;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import dgm.*;
+import dgm.EdgeID;
+import dgm.ID;
+import dgm.Subgraph;
 import dgm.exceptions.UnreachableCodeReachedException;
+
+import java.util.*;
+
 import org.neo4j.helpers.collection.Iterables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import com.fasterxml.jackson.databind.JsonNode;
 
-class EmptySubgraph implements Subgraph
-{
+class EmptySubgraph implements Subgraph {
     @Override
-    public Iterable<Edge> edges()
-    {
+    public Iterable<Edge> edges() {
         return Iterables.empty();
     }
 

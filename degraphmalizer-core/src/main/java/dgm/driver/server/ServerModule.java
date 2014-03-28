@@ -19,8 +19,8 @@ import com.google.inject.*;
  * Configure some pretty standard netty options
  */
 public class ServerModule extends AbstractModule {
-    final int port;
-    final String host;
+    private final int port;
+    private final String host;
 
     public ServerModule(String host, int port) {
         this.host = host;
@@ -35,7 +35,7 @@ public class ServerModule extends AbstractModule {
             try {
                 bind(SocketAddress.class).toInstance(new InetSocketAddress(InetAddress.getByName(host), port));
             } catch (UnknownHostException e) {
-                throw new RuntimeException("Can't find address: "+host,e);
+                throw new RuntimeException("Can't find address: " + host, e);
             }
         }
     }
