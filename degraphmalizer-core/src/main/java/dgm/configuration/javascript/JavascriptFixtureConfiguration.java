@@ -238,6 +238,7 @@ class JavascriptFixtureTypeConfiguration implements FixtureTypeConfiguration {
                 url = getClass().getClassLoader().getResource(mappingUrl.trim().substring("classpath:".length()));
                 if (url == null) {
                     JavascriptFixtureConfiguration.LOG.warn("Cannot find " + mappingUrl.trim());
+                    return null;
                 }
             } else {
                 url = new URL(mappingUrl);
