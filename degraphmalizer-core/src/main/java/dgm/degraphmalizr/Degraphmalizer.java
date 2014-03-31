@@ -175,6 +175,7 @@ public class Degraphmalizer implements Degraphmalizr {
         try {
             return determineRecomputeActions(action);
         } catch (NotFoundInGraphException e) {
+            log.debug("This should not happen"); // see comments in determineRecomputeActions
             return Collections.emptyList();
         }
     }
@@ -272,7 +273,7 @@ public class Degraphmalizer implements Degraphmalizr {
 
     // TODO refactor (dubbeling met doUpdate DGM-44)
     private DegraphmalizeResult doDelete(DegraphmalizeRequest action) throws Exception {
-        log.info("Processing delete request for id {} scope {} ", action.id(), action.scope());
+        log.debug("Processing delete request for id {} scope {} ", action.id(), action.scope());
 
         List<Future<RecomputeResult>> results;
         switch (action.scope()) {
@@ -402,6 +403,8 @@ public class Degraphmalizer implements Degraphmalizr {
         final Vertex root = GraphUtilities.findVertex(objectMapper, graph, id);
         if (root == null) {
             // TODO this shouldn't occur, because the subgraph implicitly commits a vertex to the graph
+            // MM: Thought this should not occur according to the above comments, this is happening very often, and is never logged.
+            // quite confusing.
             throw new NotFoundInGraphException(id);
         }
 
