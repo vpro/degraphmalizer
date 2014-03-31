@@ -6,12 +6,10 @@ import dgm.ID;
  * Nodes were found in the graph with a version that cannot be found in Elasticsearch.
  *
  */
-public class NotFoundInGraphException extends DegraphmalizerException
-{
+public class NotFoundInGraphException extends DegraphmalizerException {
     final protected ID id;
 
-    public NotFoundInGraphException(ID id)
-    {
+    public NotFoundInGraphException(ID id) {
         super("Could not find vertex for " + id);
         this.id = id;
     }
@@ -19,8 +17,7 @@ public class NotFoundInGraphException extends DegraphmalizerException
     /**
      * Get the ID that couldn't be found.
      */
-    public ID id()
-    {
+    public ID id() {
         return id;
     }
 }

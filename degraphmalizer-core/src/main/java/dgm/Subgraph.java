@@ -1,9 +1,8 @@
 package dgm;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import dgm.ID;
-
 import java.util.Map;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
 TODO fix this documentation a bit
@@ -14,8 +13,7 @@ how is this interface complete:
 - every ID used, which is not explicitly "added" first will be considered 'symbolic' and created without data,
    once the graph is viewed, referring to some indirect reference to a node.
 */
-public interface Subgraph
-{
+public interface Subgraph {
     enum Direction { INWARDS, OUTWARDS }
 
     interface Edge {
