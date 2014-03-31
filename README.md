@@ -59,7 +59,7 @@ In many cases it would be nicer to have an index like this
                    "title": "Neuromancer"
                  },
                  { "id": "book_id_2",
-                   "title": "All Tomorrow's Parties" } ] 
+                   "title": "All Tomorrow's Parties" } ]
 	}
 
 	/bob-target/books/book_id_1
@@ -277,8 +277,7 @@ configuration that would transform Alice and Bob's index as above:
 		   the total graph is composed of all the subgraphs */
 
 		// so we add on edge for each book this author wrote
-		if(doc.books && doc.books.length)
-		{
+		if(doc.books && doc.books.length) {
 			doc.books.forEach(function(c) {
 				// this constructs an edge from us to "/bob/books/c"
 				// if that ID doesn't exist, a node is created for it.
@@ -286,13 +285,13 @@ configuration that would transform Alice and Bob's index as above:
 			})
 		}
 	},
-	
+
 	// we now define some walks
 	walks: [
 		{
 			/* there are two options here: OUT or IN
 			   OUT follows edges from tail to head, and vv.
-			   
+
 			   In the future you can define your own walks here,
 			   using a DSL that automatically gives reverse walk
 			*/
