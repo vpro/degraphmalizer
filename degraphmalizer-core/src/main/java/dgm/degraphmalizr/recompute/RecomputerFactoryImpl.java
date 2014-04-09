@@ -24,6 +24,7 @@ import dgm.trees.Pair;
 import dgm.trees.Tree;
 import dgm.trees.TreeEntry;
 import dgm.trees.Trees;
+
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
@@ -139,7 +140,7 @@ public class RecomputerFactoryImpl implements Recomputer {
         private IndexResponse writeToES(ObjectNode document) {
             final TypeConfig conf = request.config;
             final ID sourceID = request.root.id();
-            final ID targetID = sourceID.index(conf.targetIndex()).type(conf.targetType());
+            final ID targetID = getTargetID(sourceID, conf);
 
             // write the source version to the document
             document.put("_fromSource", toJSON(objectMapper, sourceID));
@@ -156,6 +157,15 @@ public class RecomputerFactoryImpl implements Recomputer {
             }
 
             return ir;
+        }
+
+        private void deleteFromES(ID sourceID, TypeConfig config) {
+            ID targetID = getTargetID(sourceID, config);
+            client.prepareDelete(targetID.index(), targetID.type(), targetID.id()).execute().actionGet(); // Ignore response, we don't care whether targetID existed or not
+        }
+
+        private ID getTargetID(ID sourceID, TypeConfig config) {
+            return sourceID.index(config.targetIndex()).type(config.targetType());
         }
 
         private JsonNode getFromES() throws IOException {
@@ -188,6 +198,7 @@ public class RecomputerFactoryImpl implements Recomputer {
             // - Return when this document does not need to be processed.
             if (!request.config.filter(rawDocument)) {
                 log.debug("Aborted recompute for {} because filter=false for this document", request.root.id().toString());
+                deleteFromES(request.root.id(), request.config);
                 throw new DocumentFiltered();
             }
 
