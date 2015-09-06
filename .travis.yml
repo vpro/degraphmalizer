@@ -3,3 +3,4 @@ sudo: false # So Travis will use faster container-based infrastructure: http://d
 jdk:
   - openjdk7
   - oraclejdk7
+  - oraclejdk8
